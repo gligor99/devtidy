@@ -997,7 +997,7 @@ dependencies = [
 
 [[package]]
 name = "devtidy"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -1015,7 +1015,7 @@ dependencies = [
 
 [[package]]
 name = "devtidy-app"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "devtidy-core",
  "devtidy-rules",
@@ -1032,7 +1032,7 @@ dependencies = [
 
 [[package]]
 name = "devtidy-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "fs4",
  "glob",
@@ -1050,7 +1050,7 @@ dependencies = [
 
 [[package]]
 name = "devtidy-rules"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "devtidy-core",
  "insta",
@@ -1062,7 +1062,7 @@ dependencies = [
 
 [[package]]
 name = "devtidy-store"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "devtidy-core",
  "dirs 7.0.0",

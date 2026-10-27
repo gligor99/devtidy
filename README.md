@@ -1,6 +1,16 @@
-# devtidy
+<p align="center">
+  <img src="assets/icon-256.png" width="128" height="128" alt="DevTidy icon">
+</p>
 
-**See what your developer tooling is doing to your disk, and reclaim it safely.**
+<h1 align="center">devtidy</h1>
+
+<p align="center"><strong>See what your developer tooling is doing to your disk, and reclaim it safely.</strong></p>
+
+<p align="center">
+  <a href="https://github.com/gligor99/devtidy/actions/workflows/ci.yml"><img src="https://github.com/gligor99/devtidy/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue" alt="License: MIT OR Apache-2.0">
+  <img src="https://img.shields.io/badge/platform-macOS-lightgrey" alt="Platform: macOS">
+</p>
 
 Xcode DerivedData, simulators, Android system images, Gradle, npm, Yarn, pnpm,
 CocoaPods, pub, Cargo… A few years of mobile and web development quietly eats
@@ -22,7 +32,7 @@ $ devtidy scan
 Total 81.4 GB, reclaimable ~81.4 GB (30.3 GB marked safe).
 ```
 
-> **Status:** early development (v0.2). The CLI and a first version of the
+> **Status:** early development (v0.2.0). The CLI and a first version of the
 > desktop app work; signed builds come with v1.0. See the [roadmap](#roadmap).
 
 ## Principles

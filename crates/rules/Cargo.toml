@@ -12,7 +12,7 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-devtidy-core = { version = "0.1.0", path = "../core" }
+devtidy-core = { version = "0.2.0", path = "../core" }
 serde = { version = "1.0.229", features = ["derive"] }
 thiserror = "2.0.21"
 toml = "1.1.8"

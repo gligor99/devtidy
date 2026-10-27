@@ -177,6 +177,7 @@ fn specta_builder() -> tauri_specta::Builder<tauri::Wry> {
     ])
 }
 
+#[cfg(any(debug_assertions, test))]
 fn export_bindings(builder: &tauri_specta::Builder<tauri::Wry>) {
     let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../src/bindings.ts");
     builder

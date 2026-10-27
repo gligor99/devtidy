@@ -7,6 +7,7 @@ import { DiskHeader } from '@/components/disk-header'
 import { HistoryView } from '@/components/history-view'
 import { ItemDetails } from '@/components/item-details'
 import { ItemList } from '@/components/item-list'
+import { LogoMark } from '@/components/logo'
 import { Sidebar, type View } from '@/components/sidebar'
 import { Button } from '@/components/ui/button'
 import * as api from '@/lib/api'
@@ -72,13 +73,20 @@ export default function App() {
             <div className="flex min-w-0 flex-1 flex-col">
               {scan.error && <p className="text-destructive px-6 py-3 text-sm">{scan.error.message}</p>}
               <div className="flex-1 overflow-y-auto">
-                <ItemList
-                  items={visible}
-                  selected={selected}
-                  focused={focusedId}
-                  onToggle={(item) => setSelected((s) => toggleSelection(s, item, items))}
-                  onFocus={(item) => setFocusedId(item.rule.id)}
-                />
+                {scan.scanning && visible.length === 0 ? (
+                  <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+                    <LogoMark size={56} className="animate-pulse" />
+                    <p className="text-muted-foreground text-sm">Looking through your developer tooling…</p>
+                  </div>
+                ) : (
+                  <ItemList
+                    items={visible}
+                    selected={selected}
+                    focused={focusedId}
+                    onToggle={(item) => setSelected((s) => toggleSelection(s, item, items))}
+                    onFocus={(item) => setFocusedId(item.rule.id)}
+                  />
+                )}
               </div>
               <footer className="flex shrink-0 items-center justify-between gap-3 border-t px-6 py-3">
                 <Button variant="ghost" size="sm" onClick={() => setSelected(selectAllSafe(items))}>
