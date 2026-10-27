@@ -187,7 +187,12 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the design.
 ## Support
 
 DevTidy is free and always will be. If it saved you a few gigabytes and you
-want to say thanks, you can [buy me a coffee on Ko-fi](https://ko-fi.com/V7Q129KSZC).
+want to say thanks, a coffee keeps it going:
+
+<p align="center">
+  <a href="https://ko-fi.com/V7Q129KSZC"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Support DevTidy on Ko-fi"></a>
+</p>
+
 Starring the repo and reporting issues help just as much.
 
 ## License
