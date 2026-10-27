@@ -3,6 +3,10 @@ all-features = true
 
 [advisories]
 version = 2
+# Vulnerabilities always fail. "Unmaintained" notices are only enforced for
+# our direct dependencies; transitive ones come from the Tauri ecosystem and
+# are tracked upstream.
+unmaintained = "workspace"
 
 [licenses]
 version = 2
@@ -10,14 +14,19 @@ allow = [
     "MIT",
     "Apache-2.0",
     "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
     "Unicode-3.0",
-    "Unlicense",
+    "Zlib",
 ]
-
 # MPL-2.0 is file-level copyleft and only binds modifications to the crate
 # itself. Allowed per crate, never globally.
 exceptions = [
     { allow = ["MPL-2.0"], crate = "option-ext" },
+    { allow = ["MPL-2.0"], crate = "cssparser" },
+    { allow = ["MPL-2.0"], crate = "cssparser-macros" },
+    { allow = ["MPL-2.0"], crate = "dtoa-short" },
+    { allow = ["MPL-2.0"], crate = "selectors" },
 ]
 
 [bans]

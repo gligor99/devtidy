@@ -1,0 +1,3 @@
+{
+  "ignorePatterns": ["src/components/ui/**", "src/bindings.ts", "src-tauri/**", "dist/**"]
+}

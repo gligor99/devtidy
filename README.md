@@ -22,8 +22,8 @@ $ devtidy scan
 Total 81.4 GB, reclaimable ~81.4 GB (30.3 GB marked safe).
 ```
 
-> **Status:** early development (v0.1, CLI only). The desktop app is next.
-> See the [roadmap](#roadmap).
+> **Status:** early development (v0.2). The CLI and a first version of the
+> desktop app work; signed builds come with v1.0. See the [roadmap](#roadmap).
 
 ## Principles
 
@@ -46,6 +46,17 @@ Total 81.4 GB, reclaimable ~81.4 GB (30.3 GB marked safe).
 - **Works without Full Disk Access.** Locations it cannot read are reported
   as such instead of silently skipped.
 
+## Desktop app
+
+DevTidy shows the same information as `devtidy scan` in a native window:
+items grouped by ecosystem, a details panel that explains each one, growth
+since the previous scan, and a review step before anything is cleaned. Scans
+stream in live, and the app and the CLI share one history database.
+
+The app never sends paths to the backend. It selects rule ids, and every
+cleanup is re-planned from a fresh scan in Rust, so the UI cannot ask for
+anything a rule does not allow.
+
 ## Install
 
 From source (requires Rust 1.88+):
@@ -54,7 +65,14 @@ From source (requires Rust 1.88+):
 cargo install --git https://github.com/gligor99/devtidy devtidy
 ```
 
-Homebrew and a signed macOS app will follow with v1.0.
+Homebrew and a signed macOS app will follow with v1.0. Until then, run the
+app from source:
+
+```sh
+cd app
+pnpm install
+pnpm tauri dev      # or `pnpm tauri build` for a local .app
+```
 
 ## Usage
 
@@ -71,13 +89,18 @@ devtidy clean --safe --dry-run     # show what would be removed
 devtidy clean --safe               # remove everything marked safe (asks first)
 devtidy clean gradle.caches yarn.cache
 devtidy clean xcode.archives       # dangerous: alone, confirmed by typing its id
+devtidy history                    # past cleanups and what they freed
 ```
 
 `clean` always prints the plan before touching anything. It refuses to run
 non-interactively without `--yes`, skips items whose app is running (quit
 Xcode or the Simulator first), and reports the space actually freed, measured
-on the volume. Every cleanup is appended to `history.jsonl` in your data
-directory (`~/Library/Application Support/devtidy` on macOS).
+on the volume.
+
+Every scan and cleanup is recorded in a SQLite database in your data
+directory (`~/Library/Application Support/devtidy/devtidy.db` on macOS, or
+`$DEVTIDY_DATA_DIR`), which is how devtidy shows growth since the last scan.
+Use `scan --no-record` to skip it.
 
 Exit codes: `0` success, `1` error, `2` invalid usage, `3` reclaimable total
 above `--fail-above`.
@@ -110,7 +133,7 @@ User rules can add new ids but never redefine built-in ones. See
 | Version | Scope |
 | --- | --- |
 | 0.1 | CLI: scanner, honest sizes, ~20 rules, `scan` / `explain` / `rules` / `clean` |
-| 0.2 | Desktop app (Tauri), scan history in SQLite |
+| 0.2 | Desktop app (Tauri), scan and cleanup history in SQLite |
 | 0.3 | Project scanning: stale `node_modules`, `Pods`, build folders |
 | 1.0 | Signed and notarized app, Homebrew |
 | 1.x | Menu bar, scheduled background scans and alerts, Linux |
@@ -126,7 +149,11 @@ User rules can add new ids but never redefine built-in ones. See
   assert nothing outside the rule's paths changed, including when the rule's
   folder is itself a symlink. Mutation checks confirm these tests fail when
   the symlink protection is removed.
-- CI runs on macOS and Linux with `clippy -D warnings` and `cargo deny`.
+- The cleanup dialog is tested with a mocked backend: nothing runs before
+  confirmation, dangerous items need their id typed, blocked items cannot run.
+- CI runs on macOS and Linux with `clippy -D warnings`, `cargo deny`, the
+  TypeScript type check, lint and Vitest, and fails if the generated
+  TypeScript bindings are out of date.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the design.
 

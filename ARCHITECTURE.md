@@ -5,9 +5,9 @@ devtidy is a Rust workspace with one core and thin frontends.
 ```
 crates/core    rule model, path resolution, scanner, size measurement, cleaner
 crates/rules   built-in TOML rules, user rule loading, validation
-crates/store   scan history in SQLite                      (v0.2)
+crates/store   scan snapshots and cleanup history in SQLite
 crates/cli     `devtidy` binary: clap, tables, JSON contract
-app/           Tauri 2 desktop app, React + TypeScript     (v0.2)
+app/           Tauri 2 desktop app: src-tauri (Rust) + React/TypeScript
 ```
 
 Frontends never touch the filesystem directly. Everything that reads or
@@ -119,8 +119,47 @@ bytes are reported separately, because they are only freed when the Trash is
 emptied. If far less was freed than estimated, the CLI says why that can
 happen (local snapshots, APFS clones, concurrent writes) instead of hiding it.
 
-Each run appends one JSON line per action plus a summary line to
-`history.jsonl`; the SQLite store replaces this in v0.2.
+Each cleanup is recorded in the store (see below).
+
+## History store
+
+`devtidy-store` keeps four tables in SQLite: `scans`, `scan_items`,
+`cleanups` and `cleanup_actions`. Schema changes are ordered migrations
+tracked in `PRAGMA user_version`; a database from a newer devtidy is refused
+rather than corrupted. WAL mode and a busy timeout let the CLI and the app
+write at the same time.
+
+Every scan stores one row per present rule, so growth is "size now minus the
+size in the latest earlier scan that included this rule". The v1.x
+background agent will simply run `devtidy scan` on a schedule.
+
+## Desktop app
+
+```
+React (TanStack Query) ──typed commands──▶ src-tauri ──▶ devtidy-core / rules / store
+        ▲                                     │
+        └──────── Channel<ScanEvent> ◀────────┘  (findings stream in while scanning)
+```
+
+- **One source of truth for types.** Rust types derive `specta::Type` behind
+  a `specta` feature, and `tauri-specta` generates `app/src/bindings.ts`.
+  A Rust test regenerates the file and CI fails on any diff, so the UI cannot
+  drift from the backend. Byte counts are exported as `number`: they stay far
+  below 2^53.
+- **The UI chooses ids, never paths.** `plan_clean` and `clean` take rule ids
+  and re-plan from a fresh scan. The dialog shows the plan returned by Rust,
+  and `clean` plans again rather than trusting it.
+- **Same rules as the CLI.** A dangerous item can only be selected alone,
+  "Select all safe" mirrors `--safe`, and a dangerous cleanup requires typing
+  its id.
+- **Blocking work off the main thread.** Scans and cleanups run in
+  `spawn_blocking`; the scan is parallel and sends each finding over a
+  `Channel` as soon as it is measured.
+- **Shared data.** The app opens the same database as the CLI, so history
+  and growth are the same in both.
+- **Minimal permissions.** Capabilities allow window dragging and revealing
+  a path in Finder, nothing else. The CSP only allows the app's own assets
+  and the IPC channel.
 
 ## CLI contract
 
