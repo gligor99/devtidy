@@ -1,0 +1,79 @@
+[[rule]]
+id = "npm.cache"
+name = "npm cache"
+ecosystem = "javascript"
+paths = ["~/.npm/_cacache"]
+safety = "safe"
+regen_cost = "medium"
+description = "Every package tarball npm has downloaded."
+regen_note = "Packages are downloaded again on the next install."
+cleanup = { kind = "command", argv = ["npm", "cache", "clean", "--force"], fallback_remove = true }
+docs = "https://docs.npmjs.com/cli/commands/npm-cache"
+
+[[rule]]
+id = "yarn.cache"
+name = "Yarn cache"
+ecosystem = "javascript"
+paths = [
+    "~/Library/Caches/Yarn",
+    "~/.cache/yarn",
+    "~/.yarn/berry/cache",
+]
+safety = "safe"
+regen_cost = "medium"
+description = "Packages downloaded by Yarn classic and Yarn Berry's global cache."
+regen_note = "Packages are downloaded again on the next install."
+cleanup = { kind = "remove", contents_only = true }
+
+[[rule]]
+id = "pnpm.store"
+name = "pnpm store"
+ecosystem = "javascript"
+paths = [
+    "~/Library/pnpm/store",
+    "~/.local/share/pnpm/store",
+]
+safety = "caution"
+regen_cost = "medium"
+description = "Content-addressable store that pnpm hard-links into every project's node_modules."
+regen_note = "Installed projects keep working; packages are downloaded again on the next install. Files still linked from a project do not free space."
+cleanup = { kind = "remove" }
+
+[[rule]]
+id = "bun.cache"
+name = "Bun install cache"
+ecosystem = "javascript"
+paths = ["~/.bun/install/cache"]
+safety = "safe"
+regen_cost = "medium"
+description = "Packages downloaded by `bun install`."
+regen_note = "Packages are downloaded again on the next install."
+cleanup = { kind = "remove", contents_only = true }
+
+[[rule]]
+id = "typescript.cache"
+name = "TypeScript types cache"
+ecosystem = "javascript"
+platforms = ["macos"]
+paths = ["~/Library/Caches/typescript"]
+safety = "safe"
+regen_cost = "low"
+description = "Type definitions downloaded by editors for automatic type acquisition."
+regen_note = "Downloaded again by your editor when needed."
+cleanup = { kind = "remove" }
+
+[[rule]]
+id = "electron.cache"
+name = "Electron download cache"
+ecosystem = "javascript"
+paths = [
+    "~/Library/Caches/electron",
+    "~/Library/Caches/electron-builder",
+    "~/.cache/electron",
+    "~/.cache/electron-builder",
+]
+safety = "safe"
+regen_cost = "low"
+description = "Electron binaries and build tools downloaded by electron and electron-builder."
+regen_note = "Downloaded again on the next install or build."
+cleanup = { kind = "remove" }

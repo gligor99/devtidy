@@ -1,0 +1,22 @@
+[package]
+name = "devtidy-rules"
+description = "Built-in cleanup rules for devtidy."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+devtidy-core = { version = "0.1.0", path = "../core" }
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
+toml = "1.1.8"
+
+[dev-dependencies]
+insta = { version = "1.49.0", features = ["yaml"] }
+tempfile = "3.27.0"

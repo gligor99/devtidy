@@ -1,0 +1,123 @@
+# devtidy
+
+**See what your developer tooling is doing to your disk, and reclaim it safely.**
+
+Xcode DerivedData, simulators, Android system images, Gradle, npm, Yarn, pnpm,
+CocoaPods, pub, Cargo… A few years of mobile and web development quietly eats
+100+ GB. Generic disk tools show you *where* the bytes are. devtidy tells you
+**what each item is, whether it is safe to remove, and what removing it will
+cost you**.
+
+```
+$ devtidy scan
+┌────────────────────────────────┬─────────────┬──────────┬───────────┬───────────────────────┐
+│ Item                           ┆ Ecosystem   ┆ Size     ┆ Safety    ┆ Id                    │
+╞════════════════════════════════╪═════════════╪══════════╪═══════════╪═══════════════════════╡
+│ Android emulator system images ┆ Android     ┆  31.5 GB ┆ caution   ┆ android.system-images │
+│ Simulator devices              ┆ iOS / Xcode ┆  18.3 GB ┆ dangerous ┆ simulator.devices     │
+│ Xcode DerivedData              ┆ iOS / Xcode ┆  18.2 GB ┆ safe      ┆ xcode.derived-data    │
+│ Gradle caches                  ┆ Android     ┆  12.1 GB ┆ safe      ┆ gradle.caches         │
+│ pnpm store                     ┆ JavaScript  ┆   1.3 GB ┆ caution   ┆ pnpm.store            │
+└────────────────────────────────┴─────────────┴──────────┴───────────┴───────────────────────┘
+Total 81.4 GB, reclaimable ~81.4 GB (30.3 GB marked safe).
+```
+
+> **Status:** early development (v0.1, CLI only). `scan`, `explain` and
+> `rules` work today; `clean` and the desktop app are next. See the
+> [roadmap](#roadmap).
+
+## Principles
+
+- **Never lies about sizes.** devtidy counts allocated blocks, not file length,
+  so sparse files (Docker's VM disk) are not inflated. Hard-linked files are
+  counted once, and items whose files are also linked from elsewhere (pnpm,
+  bun) show how much would *actually* be freed.
+- **Never deletes outside a rule's paths.** Rules can only point at least two
+  levels below your home directory, symlinks are never followed, and mounts
+  are never crossed. These invariants are enforced at load time and tested.
+- **Prefers the tool's own cleanup.** When a tool has a cleanup command
+  (`npm cache clean`, `pod cache clean`, `xcrun simctl`), devtidy runs it
+  instead of deleting files behind the tool's back.
+- **Removal follows risk.** `safe` items are deleted, `caution` items go to
+  the Trash, `dangerous` items (archives with dSYMs, simulators with app data)
+  can only be removed one at a time.
+- **Never phones home.** No telemetry, no analytics, no remotely fetched
+  rules. Rules ship inside the signed binary and change only through a
+  reviewed release.
+- **Works without Full Disk Access.** Locations it cannot read are reported
+  as such instead of silently skipped.
+
+## Install
+
+From source (requires Rust 1.88+):
+
+```sh
+cargo install --git https://github.com/gligor99/devtidy devtidy
+```
+
+Homebrew and a signed macOS app will follow with v1.0.
+
+## Usage
+
+```sh
+devtidy scan                       # what is using space
+devtidy scan --all                 # include known locations that are absent
+devtidy scan -e ios -e android     # only some ecosystems
+devtidy scan --json | jq           # machine-readable, versioned schema
+devtidy scan --fail-above 50G      # exit code 3 when over a threshold (CI, cron)
+devtidy explain xcode.archives     # what it is, what removal costs, how it is removed
+devtidy rules                      # every known location
+```
+
+Exit codes: `0` success, `1` error, `2` invalid usage, `3` reclaimable total
+above `--fail-above`.
+
+Progress goes to stderr and data to stdout, so piping is always safe.
+`NO_COLOR` is respected.
+
+## Custom rules
+
+Drop a TOML file into `~/.config/devtidy/rules/`:
+
+```toml
+[[rule]]
+id = "acme.cache"
+name = "Acme build cache"
+ecosystem = "system"
+paths = ["~/.acme/cache"]
+safety = "safe"
+regen_cost = "low"
+description = "Build outputs cached by the Acme toolchain."
+regen_note = "Rebuilt on the next Acme build."
+cleanup = { kind = "remove", contents_only = true }
+```
+
+User rules can add new ids but never redefine built-in ones. See
+[CONTRIBUTING.md](CONTRIBUTING.md) to upstream a rule.
+
+## Roadmap
+
+| Version | Scope |
+| --- | --- |
+| 0.1 | CLI: scanner, honest sizes, ~20 rules, `scan` / `explain` / `rules`, then `clean` |
+| 0.2 | Desktop app (Tauri), scan history in SQLite |
+| 0.3 | Project scanning: stale `node_modules`, `Pods`, build folders |
+| 1.0 | Signed and notarized app, Homebrew |
+| 1.x | Menu bar, scheduled background scans and alerts, Linux |
+
+## How we know it is safe
+
+- Rule validation rejects any path pattern that could reach home itself, a
+  top-level folder, or anything above home.
+- Every built-in rule has a fixture test, and sizes are checked against `du`,
+  including sparse files, hard links and symlinks.
+- With `clean` (in progress): property-based tests generate random trees with
+  symlinks and hard links and assert nothing outside a rule's paths is touched.
+- CI runs on macOS and Linux with `clippy -D warnings` and `cargo deny`.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the design.
+
+## License
+
+Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE) or
+[MIT license](LICENSE-MIT) at your option.

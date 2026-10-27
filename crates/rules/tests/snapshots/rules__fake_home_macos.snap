@@ -1,0 +1,27 @@
+---
+source: crates/rules/tests/rules.rs
+expression: report
+---
+- xcode.derived-data Present Library/Developer/Xcode/DerivedData
+- xcode.archives Present Library/Developer/Xcode/Archives/fixture
+- xcode.device-support Present Library/Developer/Xcode/fixtureDeviceSupport/fixture
+- xcode.previews Present Library/Developer/Xcode/UserData/Previews
+- simulator.caches Present Library/Developer/CoreSimulator/Caches
+- simulator.devices Present Library/Developer/CoreSimulator/Devices
+- cocoapods.cache Present Library/Caches/CocoaPods
+- gradle.caches Present .gradle/caches
+- gradle.wrapper-dists Present .gradle/wrapper/dists/fixture
+- gradle.daemon-logs Present .gradle/daemon
+- "android.system-images Present Android/Sdk/system-images/fixture/fixture, Library/Android/sdk/system-images/fixture/fixture"
+- android.avd Present .android/avd/fixture.avd
+- android.cache Present .android/cache
+- npm.cache Present .npm/_cacache
+- "yarn.cache Present .cache/yarn, .yarn/berry/cache, Library/Caches/Yarn"
+- "pnpm.store Present .local/share/pnpm/store, Library/pnpm/store"
+- bun.cache Present .bun/install/cache
+- typescript.cache Present Library/Caches/typescript
+- "electron.cache Present .cache/electron, .cache/electron-builder, Library/Caches/electron, Library/Caches/electron-builder"
+- "pub.cache Present .pub-cache/git, .pub-cache/hosted"
+- "cargo.registry Present .cargo/git/checkouts, .cargo/registry/cache, .cargo/registry/src"
+- "pip.cache Present .cache/pip, Library/Caches/pip"
+- "homebrew.cache Present .cache/Homebrew, Library/Caches/Homebrew"

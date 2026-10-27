@@ -1,0 +1,28 @@
+[package]
+name = "devtidy"
+description = "See and safely reclaim disk space used by developer tooling."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive", "env"] }
+comfy-table = "8.0.1"
+devtidy-core = { version = "0.1.0", path = "../core" }
+devtidy-rules = { version = "0.1.0", path = "../rules" }
+dirs = "7.0.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+
+[dev-dependencies]
+assert_cmd = "2.2.2"
+predicates = "3.1.4"
+serde_json = "1.0.154"
+tempfile = "3.27.0"

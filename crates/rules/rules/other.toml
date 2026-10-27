@@ -1,0 +1,58 @@
+[[rule]]
+id = "pub.cache"
+name = "Dart / Flutter pub cache"
+ecosystem = "flutter"
+paths = [
+    "~/.pub-cache/hosted",
+    "~/.pub-cache/git",
+]
+safety = "caution"
+regen_cost = "medium"
+description = "Packages downloaded by `pub get`, shared by all Dart and Flutter projects."
+regen_note = "Packages are downloaded again on the next `pub get`. The clean command also deactivates globally activated Dart tools."
+cleanup = { kind = "command", argv = ["dart", "pub", "cache", "clean", "--force"] }
+docs = "https://dart.dev/tools/pub/cmd/pub-cache"
+
+[[rule]]
+id = "cargo.registry"
+name = "Cargo registry and git cache"
+ecosystem = "rust"
+paths = [
+    "~/.cargo/registry/cache",
+    "~/.cargo/registry/src",
+    "~/.cargo/git/checkouts",
+]
+safety = "safe"
+regen_cost = "medium"
+description = "Downloaded crate archives, their extracted sources and git dependency checkouts."
+regen_note = "Crates are downloaded again on the next build."
+cleanup = { kind = "remove" }
+processes = ["cargo"]
+
+[[rule]]
+id = "pip.cache"
+name = "pip cache"
+ecosystem = "python"
+paths = [
+    "~/Library/Caches/pip",
+    "~/.cache/pip",
+]
+safety = "safe"
+regen_cost = "low"
+description = "Wheels and HTTP responses cached by pip."
+regen_note = "Packages are downloaded again on the next install."
+cleanup = { kind = "remove", contents_only = true }
+
+[[rule]]
+id = "homebrew.cache"
+name = "Homebrew download cache"
+ecosystem = "system"
+paths = [
+    "~/Library/Caches/Homebrew",
+    "~/.cache/Homebrew",
+]
+safety = "safe"
+regen_cost = "low"
+description = "Bottles and source archives Homebrew has downloaded."
+regen_note = "Nothing installed is affected; downloads happen again on the next install or upgrade."
+cleanup = { kind = "remove", contents_only = true }

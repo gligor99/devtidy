@@ -1,0 +1,71 @@
+[[rule]]
+id = "gradle.caches"
+name = "Gradle caches"
+ecosystem = "android"
+paths = ["~/.gradle/caches"]
+safety = "safe"
+regen_cost = "medium"
+description = "Downloaded dependencies, transformed artifacts and build caches shared by all Gradle builds."
+regen_note = "The next build downloads and transforms dependencies again, which can take several minutes."
+cleanup = { kind = "remove" }
+docs = "https://docs.gradle.org/current/userguide/directory_layout.html"
+
+[[rule]]
+id = "gradle.wrapper-dists"
+name = "Gradle wrapper distributions"
+ecosystem = "android"
+paths = ["~/.gradle/wrapper/dists/*"]
+safety = "safe"
+regen_cost = "medium"
+description = "Every Gradle version downloaded by a project's wrapper."
+regen_note = "Each project downloads its Gradle version again on the next build."
+cleanup = { kind = "remove" }
+
+[[rule]]
+id = "gradle.daemon-logs"
+name = "Gradle daemon logs"
+ecosystem = "android"
+paths = ["~/.gradle/daemon"]
+safety = "safe"
+regen_cost = "low"
+description = "Log files and registry written by Gradle daemons."
+regen_note = "Nothing is lost; new logs are written by the next daemon."
+cleanup = { kind = "remove", contents_only = true }
+
+[[rule]]
+id = "android.system-images"
+name = "Android emulator system images"
+ecosystem = "android"
+paths = [
+    "~/Library/Android/sdk/system-images/*/*",
+    "~/Android/Sdk/system-images/*/*",
+]
+safety = "caution"
+regen_cost = "high"
+description = "Emulator OS images, one per API level and variant you have installed."
+regen_note = "Must be downloaded again in the SDK Manager (often several GB). Emulators using the image stop working."
+cleanup = { kind = "remove" }
+processes = ["qemu-system-aarch64", "qemu-system-x86_64"]
+
+[[rule]]
+id = "android.avd"
+name = "Android virtual devices"
+ecosystem = "android"
+paths = ["~/.android/avd/*.avd"]
+safety = "dangerous"
+regen_cost = "high"
+description = "Emulator devices with their user data, snapshots and installed apps."
+regen_note = "Devices must be recreated in Device Manager and all data inside them is lost."
+cleanup = { kind = "remove" }
+processes = ["qemu-system-aarch64", "qemu-system-x86_64"]
+
+[[rule]]
+id = "android.cache"
+name = "Android tools cache"
+ecosystem = "android"
+paths = ["~/.android/cache"]
+safety = "safe"
+regen_cost = "low"
+description = "Cached SDK repository listings and downloads used by Android tooling."
+regen_note = "Recreated automatically."
+cleanup = { kind = "remove", contents_only = true }
