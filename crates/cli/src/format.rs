@@ -49,7 +49,7 @@ fn colored() -> bool {
     std::io::stdout().is_terminal() && std::env::var_os("NO_COLOR").is_none()
 }
 
-fn safety_cell(safety: Safety) -> Cell {
+pub fn safety_cell(safety: Safety) -> Cell {
     let (text, color) = match safety {
         Safety::Safe => ("safe", Color::Green),
         Safety::Caution => ("caution", Color::Yellow),
@@ -72,7 +72,7 @@ fn size_cell(item: &Item) -> String {
     out
 }
 
-fn table(header: &[&str]) -> Table {
+pub fn table(header: &[&str]) -> Table {
     let mut table = Table::new();
     table
         .load_style(UTF8_FULL_CONDENSED)

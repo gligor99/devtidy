@@ -1,5 +1,6 @@
 //! `devtidy`: see and safely reclaim disk space used by developer tooling.
 
+mod clean_cmd;
 mod format;
 mod report;
 
@@ -51,6 +52,21 @@ enum Command {
     Explain {
         /// Rule id, e.g. `gradle.caches`.
         id: String,
+    },
+    /// Reclaim space. Shows the plan and asks before changing anything.
+    Clean {
+        /// Rule ids to clean. A dangerous rule must be cleaned on its own.
+        #[arg(required_unless_present = "safe", conflicts_with = "safe")]
+        ids: Vec<String>,
+        /// Clean every item marked safe.
+        #[arg(long)]
+        safe: bool,
+        /// Show the plan without changing anything.
+        #[arg(long, short = 'n')]
+        dry_run: bool,
+        /// Do not ask for confirmation.
+        #[arg(long, short)]
+        yes: bool,
     },
     /// List every known rule.
     Rules,
@@ -147,6 +163,21 @@ fn run(cli: Cli) -> Result<ExitCode> {
                 print!("{}", format::explain(rule, &item));
             }
         }
+        Command::Clean {
+            ids,
+            safe,
+            dry_run,
+            yes,
+        } => {
+            let opts = clean_cmd::Options {
+                ids,
+                safe,
+                dry_run,
+                yes,
+                json: cli.json,
+            };
+            return clean_cmd::run(&rules, &ctx, &opts, &history_log()?);
+        }
         Command::Rules => {
             if cli.json {
                 println!(
@@ -161,4 +192,15 @@ fn run(cli: Cli) -> Result<ExitCode> {
         }
     }
     Ok(ExitCode::SUCCESS)
+}
+
+/// `history.jsonl` in the platform data directory, overridable for tests.
+fn history_log() -> Result<PathBuf> {
+    let dir = match std::env::var_os("DEVTIDY_DATA_DIR") {
+        Some(dir) => PathBuf::from(dir),
+        None => dirs::data_dir()
+            .context("could not determine the data directory")?
+            .join("devtidy"),
+    };
+    Ok(dir.join("history.jsonl"))
 }

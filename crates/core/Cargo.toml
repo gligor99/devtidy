@@ -12,11 +12,15 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
+fs4 = "1.1.0"
 glob = "0.3.4"
 rayon = "1.12.0"
 serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
 thiserror = "2.0.21"
+trash = "5.2.9"
 walkdir = "2.5.0"
 
 [dev-dependencies]
+proptest = "1.12.0"
 tempfile = "3.27.0"

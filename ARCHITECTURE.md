@@ -3,7 +3,7 @@
 devtidy is a Rust workspace with one core and thin frontends.
 
 ```
-crates/core    rule model, path resolution, scanner, size measurement, (cleaner)
+crates/core    rule model, path resolution, scanner, size measurement, cleaner
 crates/rules   built-in TOML rules, user rule loading, validation
 crates/store   scan history in SQLite                      (v0.2)
 crates/cli     `devtidy` binary: clap, tables, JSON contract
@@ -76,19 +76,51 @@ A `Finding` carries the matched paths, a `Measurement`
 
 Rules are scanned in parallel with rayon.
 
-## Cleaning (in progress)
+## Cleaning
 
-Removal strategy by safety:
+Cleaning is two steps, so every frontend can show the plan first:
 
-| Safety | Strategy |
+1. `clean::plan` resolves a `Selection` (explicit ids, or every `safe` rule)
+   into `Action`s with concrete targets, a method and the processes blocking
+   them. A `dangerous` rule can only be selected on its own; `--safe` never
+   selects `caution` or `dangerous` rules.
+2. `clean::execute` re-checks every target with `clean::guard` immediately
+   before removing it and records the outcome of each action.
+
+| Safety | Method |
 | --- | --- |
 | `safe` | delete permanently, space is freed immediately |
-| `caution` | move to Trash |
-| `dangerous` | Trash, only when selected individually |
+| `caution` | move to Trash (NSFileManager on macOS, no extra permission) |
+| `dangerous` | Trash, only when selected alone; the CLI asks you to type the id |
 
-Before cleaning, devtidy checks the rule's `processes`. Every action is
-appended to `history.jsonl` in the data directory. `clean` without `--yes`
-always prints the plan first.
+A rule with a `command` cleanup runs the tool's own command when the program
+is on `PATH`, and otherwise falls back to removal if `fallback_remove` is set.
+
+### The guard
+
+Every target must be either one of the rule's matched roots, or a direct
+child of a root that is a real directory (not a symlink). Paths must be
+absolute with no `.` or `..` components. Consequences:
+
+- a `contents_only` rule whose folder is a symlink removes nothing;
+- a rule whose folder is a symlink and that removes the whole folder only
+  removes the link, never its target;
+- directory trees are removed with `std::fs::remove_dir_all`, which does not
+  follow symlinks inside the tree.
+
+All OS side effects (process checks, commands, Trash, free space) go through
+the `clean::System` trait, so the cleaner is tested against a fake system and
+real temporary directories.
+
+### Measuring what was freed
+
+`execute` reads the volume's available space before and after. Moved-to-Trash
+bytes are reported separately, because they are only freed when the Trash is
+emptied. If far less was freed than estimated, the CLI says why that can
+happen (local snapshots, APFS clones, concurrent writes) instead of hiding it.
+
+Each run appends one JSON line per action plus a summary line to
+`history.jsonl`; the SQLite store replaces this in v0.2.
 
 ## CLI contract
 

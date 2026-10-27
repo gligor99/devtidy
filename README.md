@@ -22,9 +22,8 @@ $ devtidy scan
 Total 81.4 GB, reclaimable ~81.4 GB (30.3 GB marked safe).
 ```
 
-> **Status:** early development (v0.1, CLI only). `scan`, `explain` and
-> `rules` work today; `clean` and the desktop app are next. See the
-> [roadmap](#roadmap).
+> **Status:** early development (v0.1, CLI only). The desktop app is next.
+> See the [roadmap](#roadmap).
 
 ## Principles
 
@@ -67,7 +66,18 @@ devtidy scan --json | jq           # machine-readable, versioned schema
 devtidy scan --fail-above 50G      # exit code 3 when over a threshold (CI, cron)
 devtidy explain xcode.archives     # what it is, what removal costs, how it is removed
 devtidy rules                      # every known location
+
+devtidy clean --safe --dry-run     # show what would be removed
+devtidy clean --safe               # remove everything marked safe (asks first)
+devtidy clean gradle.caches yarn.cache
+devtidy clean xcode.archives       # dangerous: alone, confirmed by typing its id
 ```
+
+`clean` always prints the plan before touching anything. It refuses to run
+non-interactively without `--yes`, skips items whose app is running (quit
+Xcode or the Simulator first), and reports the space actually freed, measured
+on the volume. Every cleanup is appended to `history.jsonl` in your data
+directory (`~/Library/Application Support/devtidy` on macOS).
 
 Exit codes: `0` success, `1` error, `2` invalid usage, `3` reclaimable total
 above `--fail-above`.
@@ -99,7 +109,7 @@ User rules can add new ids but never redefine built-in ones. See
 
 | Version | Scope |
 | --- | --- |
-| 0.1 | CLI: scanner, honest sizes, ~20 rules, `scan` / `explain` / `rules`, then `clean` |
+| 0.1 | CLI: scanner, honest sizes, ~20 rules, `scan` / `explain` / `rules` / `clean` |
 | 0.2 | Desktop app (Tauri), scan history in SQLite |
 | 0.3 | Project scanning: stale `node_modules`, `Pods`, build folders |
 | 1.0 | Signed and notarized app, Homebrew |
@@ -111,8 +121,11 @@ User rules can add new ids but never redefine built-in ones. See
   top-level folder, or anything above home.
 - Every built-in rule has a fixture test, and sizes are checked against `du`,
   including sparse files, hard links and symlinks.
-- With `clean` (in progress): property-based tests generate random trees with
-  symlinks and hard links and assert nothing outside a rule's paths is touched.
+- Property-based tests generate random trees with files, directories,
+  symlinks out of the tree and hard links from outside, then clean them and
+  assert nothing outside the rule's paths changed, including when the rule's
+  folder is itself a symlink. Mutation checks confirm these tests fail when
+  the symlink protection is removed.
 - CI runs on macOS and Linux with `clippy -D warnings` and `cargo deny`.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the design.
