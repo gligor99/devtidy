@@ -67,16 +67,26 @@ The app never sends paths to the backend. It selects rule ids, and every
 cleanup is re-planned from a fresh scan in Rust, so the UI cannot ask for
 anything a rule does not allow.
 
-## Install
+## Download
 
-From source (requires Rust 1.88+):
+Get the latest release from
+**[GitHub Releases](https://github.com/gligor99/devtidy/releases/latest)**:
+
+- **DevTidy for macOS** (12+, Apple Silicon and Intel): `DevTidy_<version>_universal.dmg`
+- **CLI**: `devtidy-<version>-macos-universal.tar.gz` or `devtidy-<version>-linux-x86_64.tar.gz`
+
+DevTidy is not notarized by Apple yet. On first launch, right-click the app
+in Applications and choose **Open**, then **Open** again.
+
+## Install from source
+
+CLI (requires Rust 1.88+):
 
 ```sh
 cargo install --git https://github.com/gligor99/devtidy devtidy
 ```
 
-Homebrew and a signed macOS app will follow with v1.0. Until then, run the
-app from source:
+Homebrew and a notarized macOS app will follow with v1.0. Desktop app:
 
 ```sh
 cd app

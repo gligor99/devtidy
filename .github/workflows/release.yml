@@ -1,0 +1,141 @@
+name: Release
+
+# Runs on a version tag (v0.2.0). Verifies the tag matches every version
+# field and has CHANGELOG notes, creates one draft release, lets each build
+# job upload its files to that draft, then publishes it once all files and
+# checksums are there. Re-running for the same tag reuses the draft.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+  GH_TOKEN: ${{ github.token }}
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        run: echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+      - name: Tag matches Cargo.toml, package.json and tauri.conf.json
+        run: |
+          v="${TAG#v}"
+          grep -q "^version = \"$v\"$" Cargo.toml
+          test "$(jq -r .version app/package.json)" = "$v"
+          test "$(jq -r .version app/src-tauri/tauri.conf.json)" = "$v"
+      - name: CHANGELOG has notes for this version
+        run: scripts/release-notes.sh "${TAG#v}" > /dev/null
+
+  draft:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/release-notes.sh "${{ needs.verify.outputs.version }}" > notes.md
+      - run: |
+          gh release view "$TAG" > /dev/null 2>&1 \
+            || gh release create "$TAG" --draft --title "DevTidy $TAG" --notes-file notes.md
+
+  app-macos:
+    needs: [verify, draft]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: app/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: app
+      # Ad-hoc signed (see tauri.conf.json). For Developer ID signing and
+      # notarization, add these secrets and pass them here as env:
+      # APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY,
+      # APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID
+      - run: pnpm tauri build --target universal-apple-darwin --bundles dmg
+        working-directory: app
+      - name: Upload the DMG to the draft
+        run: |
+          dmg=$(ls target/universal-apple-darwin/release/bundle/dmg/*.dmg)
+          out="DevTidy_${{ needs.verify.outputs.version }}_universal.dmg"
+          cp "$dmg" "$out"
+          gh release upload "$TAG" --clobber "$out"
+
+  cli:
+    needs: [verify, draft]
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: macos-latest
+            name: macos-universal
+          - os: ubuntu-latest
+            name: linux-x86_64
+            target: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target || 'aarch64-apple-darwin,x86_64-apple-darwin' }}
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        shell: bash
+        run: |
+          mkdir -p out
+          if [ "${{ matrix.name }}" = macos-universal ]; then
+            for t in aarch64-apple-darwin x86_64-apple-darwin; do
+              cargo build --release --locked -p devtidy --target "$t"
+            done
+            lipo -create -output out/devtidy \
+              target/aarch64-apple-darwin/release/devtidy \
+              target/x86_64-apple-darwin/release/devtidy
+          else
+            cargo build --release --locked -p devtidy --target "${{ matrix.target }}"
+            cp "target/${{ matrix.target }}/release/devtidy" out/devtidy
+          fi
+          ./out/devtidy --version | grep -q "${{ needs.verify.outputs.version }}"
+      - name: Upload the archive to the draft
+        shell: bash
+        run: |
+          name="devtidy-${{ needs.verify.outputs.version }}-${{ matrix.name }}"
+          mkdir "$name"
+          cp out/devtidy README.md CHANGELOG.md LICENSE-MIT LICENSE-APACHE "$name/"
+          tar -czf "$name.tar.gz" "$name"
+          gh release upload "$TAG" --clobber "$name.tar.gz"
+
+  publish:
+    needs: [verify, app-macos, cli]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every file is attached
+        run: |
+          v="${{ needs.verify.outputs.version }}"
+          assets=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets -q '.assets[].name')
+          echo "$assets"
+          for f in "DevTidy_${v}_universal.dmg" "devtidy-${v}-macos-universal.tar.gz" "devtidy-${v}-linux-x86_64.tar.gz"; do
+            grep -qx "$f" <<< "$assets"
+          done
+      - name: Checksums
+        run: |
+          mkdir assets && cd assets
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern '*.dmg' --pattern '*.tar.gz'
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber SHA256SUMS
+      - run: gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest

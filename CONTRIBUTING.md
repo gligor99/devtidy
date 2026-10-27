@@ -29,6 +29,16 @@ cargo fmt --all
 Use [Conventional Commits](https://www.conventionalcommits.org/)
 (`feat:`, `fix:`, `docs:`, ...); release notes are generated from them.
 
+## Releasing
+
+1. Bump the version in `Cargo.toml`, `app/package.json` and
+   `app/src-tauri/tauri.conf.json`.
+2. Add a section for it to `CHANGELOG.md`.
+3. Commit, then tag and push: `git tag v0.3.0 && git push origin v0.3.0`.
+
+The release workflow checks the versions and notes, builds the universal DMG
+and CLI archives, uploads them with `SHA256SUMS` and publishes the release.
+
 ## Licensing
 
 Unless you explicitly state otherwise, any contribution you submit is

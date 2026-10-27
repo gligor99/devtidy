@@ -40,6 +40,12 @@
       "icons/icon.ico"
     ],
     "category": "DeveloperTool",
-    "shortDescription": "See and safely reclaim disk space used by developer tooling."
+    "shortDescription": "See and safely reclaim disk space used by developer tooling.",
+    "macOS": {
+      "signingIdentity": "-",
+      "minimumSystemVersion": "12.0"
+    },
+    "copyright": "\u00a9 2026 Luka Gligorijevic. MIT OR Apache-2.0.",
+    "homepage": "https://github.com/gligor99/devtidy"
   }
 }
