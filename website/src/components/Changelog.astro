@@ -1,0 +1,14 @@
+---
+// Renders CHANGELOG.md from the repository root, without its title and link
+// reference definitions (the page has its own title).
+import { marked } from 'marked'
+import { CHANGELOG } from '../lib/project'
+
+const body = CHANGELOG.split('\n')
+  .filter((line) => !/^# /.test(line) && !/^\[[^\]]+\]: /.test(line))
+  .join('\n')
+  .replace(/^## \[([^\]]+)\]/gm, '## $1')
+const html = await marked.parse(body)
+---
+
+<Fragment set:html={html} />

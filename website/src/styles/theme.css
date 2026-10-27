@@ -1,0 +1,74 @@
+/* DevTidy brand for Starlight: teal from the icon, gold from the sparkle. */
+
+:root {
+  --sl-font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --sl-font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+
+  --dt-safe: #2dd4a7;
+  --dt-caution: #f5b941;
+  --dt-dangerous: #f2685b;
+}
+
+/* Dark (default) */
+:root,
+::backdrop {
+  --sl-color-accent-low: #0b3b34;
+  --sl-color-accent: #14b8a6;
+  --sl-color-accent-high: #99f6e4;
+  --sl-color-white: #ecfdf8;
+  --sl-color-gray-1: #d3e4df;
+  --sl-color-gray-2: #a9c0ba;
+  --sl-color-gray-3: #7c948e;
+  --sl-color-gray-4: #4f6662;
+  --sl-color-gray-5: #2a3d39;
+  --sl-color-gray-6: #16231f;
+  --sl-color-black: #0b1412;
+}
+
+/* Light */
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+  --sl-color-accent-low: #ccfbef;
+  --sl-color-accent: #0f8a7a;
+  --sl-color-accent-high: #0b4f46;
+  --sl-color-white: #0b1412;
+  --sl-color-gray-1: #16231f;
+  --sl-color-gray-2: #2a3d39;
+  --sl-color-gray-3: #4f6662;
+  --sl-color-gray-4: #7c948e;
+  --sl-color-gray-5: #c5d6d1;
+  --sl-color-gray-6: #eaf3f0;
+  --sl-color-gray-7: #f5faf8;
+  --sl-color-black: #ffffff;
+
+  --dt-safe: #0f8a6a;
+  --dt-caution: #a86a00;
+  --dt-dangerous: #c0392b;
+}
+
+.site-title img {
+  border-radius: 22%;
+}
+
+/* Safety chips used in the rules reference. */
+.dt-chip {
+  display: inline-block;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.dt-chip[data-safety='safe'] {
+  color: var(--dt-safe);
+  background: color-mix(in srgb, var(--dt-safe) 14%, transparent);
+}
+.dt-chip[data-safety='caution'] {
+  color: var(--dt-caution);
+  background: color-mix(in srgb, var(--dt-caution) 16%, transparent);
+}
+.dt-chip[data-safety='dangerous'] {
+  color: var(--dt-dangerous);
+  background: color-mix(in srgb, var(--dt-dangerous) 14%, transparent);
+}

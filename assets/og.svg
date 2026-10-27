@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Social preview image. Render: rsvg-convert assets/og.svg -o website/public/og.png -->
+  <defs>
+    <radialGradient id="glow" cx="0.18" cy="0.2" r="0.9">
+      <stop offset="0" stop-color="#14B8A6" stop-opacity="0.45"/>
+      <stop offset="0.6" stop-color="#0B1412" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.95" cy="1" r="0.6">
+      <stop offset="0" stop-color="#FCD34D" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#0B1412" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FFFFFF" stroke-opacity="0.04" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#0B1412"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <image href="icon.svg" x="70" y="70" width="190" height="190"/>
+
+  <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" fill="#ECFDF8">
+    <text x="90" y="345" font-size="76" font-weight="700" letter-spacing="-2">Reclaim the disk space</text>
+    <text x="90" y="430" font-size="76" font-weight="700" letter-spacing="-2" fill="#5EEAD4">your dev tools ate.</text>
+    <text x="92" y="505" font-size="30" fill="#9FB8B2">Xcode, simulators, Android, Gradle, npm, pnpm, CocoaPods and more.</text>
+    <text x="92" y="560" font-size="26" fill="#6B8580">Free and open source · macOS app + CLI · github.com/gligor99/devtidy</text>
+  </g>
+  <text x="290" y="185" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="56" font-weight="700" fill="#ECFDF8" letter-spacing="-1">DevTidy</text>
+</svg>

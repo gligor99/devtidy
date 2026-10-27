@@ -1,0 +1,69 @@
+---
+title: Install
+description: Download the DevTidy app for macOS or install the devtidy CLI.
+---
+
+import { Aside, Code, Steps, TabItem, Tabs } from '@astrojs/starlight/components'
+import { DOWNLOADS, VERSION } from '../../../lib/project'
+
+export const install = (url, dir) =>
+  `curl -L ${url} | tar xz\nsudo mv ${dir}/devtidy /usr/local/bin/\ndevtidy --version`
+
+The latest release is **v{VERSION}**. All files are on
+[GitHub Releases](https://github.com/gligor99/devtidy/releases/latest), with a
+`SHA256SUMS` file to verify them.
+
+## Desktop app (macOS)
+
+Requires macOS 12 or later. One universal build runs natively on Apple
+Silicon and Intel.
+
+<Steps>
+
+1. Download <a href={DOWNLOADS.dmg}>DevTidy_{VERSION}_universal.dmg</a>.
+2. Open it and drag **DevTidy** into **Applications**.
+3. The first time, right-click DevTidy in Applications and choose **Open**,
+   then **Open** again in the dialog.
+
+</Steps>
+
+<Aside type="note" title="Why the extra step?">
+DevTidy is not notarized by Apple yet, so macOS asks before opening an app
+from an unidentified developer. It is only needed once. You can also clear the
+quarantine flag from a terminal:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/DevTidy.app
+```
+
+Notarized builds will come with v1.0.
+</Aside>
+
+## CLI
+
+<Tabs>
+  <TabItem label="macOS">
+    <Code lang="sh" code={install(DOWNLOADS.cliMac, `devtidy-${VERSION}-macos-universal`)} />
+  </TabItem>
+  <TabItem label="Linux (x86_64)">
+    <Code lang="sh" code={install(DOWNLOADS.cliLinux, `devtidy-${VERSION}-linux-x86_64`)} />
+  </TabItem>
+  <TabItem label="From source">
+    Requires Rust 1.88 or later.
+    <Code lang="sh" code="cargo install --git https://github.com/gligor99/devtidy devtidy" />
+  </TabItem>
+</Tabs>
+
+Homebrew packages will follow with v1.0.
+
+## Verify a download
+
+```sh
+shasum -a 256 -c SHA256SUMS --ignore-missing
+```
+
+## Uninstall
+
+Delete `DevTidy.app` and `/usr/local/bin/devtidy`. DevTidy keeps its scan
+history in `~/Library/Application Support/devtidy/`; delete that folder to
+remove every trace.

@@ -1,0 +1,88 @@
+---
+// Renders every built-in rule straight from crates/rules/rules/*.toml.
+import { ECOSYSTEM_LABELS, RULES, describeCleanup } from '../lib/project'
+
+const groups = Object.entries(Object.groupBy(RULES, (r) => r.ecosystem))
+const code = (s: string) => s.replace(/`([^`]+)`/g, '<code>$1</code>')
+---
+
+{
+  groups.map(([ecosystem, rules]) => (
+    <section>
+      <h2 id={ecosystem}>{ECOSYSTEM_LABELS[ecosystem] ?? ecosystem}</h2>
+      {rules!.map((rule) => (
+        <div class="rule">
+          <h3 id={rule.id}>
+            {rule.name} <span class="dt-chip" data-safety={rule.safety}>{rule.safety}</span>
+          </h3>
+          <p set:html={code(rule.description)} />
+          <table>
+            <tbody>
+              <tr>
+                <th>Id</th>
+                <td><code>{rule.id}</code></td>
+              </tr>
+              <tr>
+                <th>Paths</th>
+                <td>
+                  {rule.paths.map((p) => (
+                    <code class="path">{p}</code>
+                  ))}
+                </td>
+              </tr>
+              <tr>
+                <th>After removal</th>
+                <td set:html={code(rule.regen_note)} />
+              </tr>
+              <tr>
+                <th>Regen cost</th>
+                <td class="cap">{rule.regen_cost}</td>
+              </tr>
+              <tr>
+                <th>Cleanup</th>
+                <td set:html={code(describeCleanup(rule))} />
+              </tr>
+              {rule.processes?.length ? (
+                <tr>
+                  <th>Quit first</th>
+                  <td>{rule.processes.join(', ')}</td>
+                </tr>
+              ) : null}
+              {rule.platforms?.length ? (
+                <tr>
+                  <th>Platforms</th>
+                  <td>{rule.platforms.join(', ')}</td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </section>
+  ))
+}
+
+<style>
+  .rule {
+    margin-top: 1.75rem;
+  }
+  table {
+    display: table;
+    width: 100%;
+    font-size: var(--sl-text-sm);
+  }
+  th {
+    width: 9rem;
+    white-space: nowrap;
+    vertical-align: top;
+    color: var(--sl-color-gray-3);
+    font-weight: 500;
+  }
+  .path {
+    display: inline-block;
+    margin: 0 0.4rem 0.3rem 0;
+  }
+  .cap {
+    text-transform: capitalize;
+  }
+</style>

@@ -1,0 +1,14 @@
+---
+title: Built-in rules
+description: Every location DevTidy knows how to find and clean.
+tableOfContents: false
+---
+
+import RulesTable from '../../../../components/RulesTable.astro'
+import { RULES } from '../../../../lib/project'
+
+DevTidy ships with **{RULES.length} rules**. This page is generated from the
+same TOML files that are built into the app and the CLI, so it always matches
+the current release. Missing a tool? [Add a rule](custom/).
+
+<RulesTable />

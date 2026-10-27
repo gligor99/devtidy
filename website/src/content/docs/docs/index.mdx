@@ -1,0 +1,42 @@
+---
+title: Introduction
+description: What DevTidy is, what it cleans, and why it is safe to use.
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components'
+
+DevTidy shows what your developer tooling is storing on disk, explains what
+each item is and what removing it costs, and reclaims the space safely. It
+ships as a **macOS app** and a **CLI** that share one engine and one history.
+
+A few years of mobile and web development quietly eats 100+ GB: Xcode
+DerivedData, simulators, Android system images, Gradle, npm, Yarn, pnpm,
+CocoaPods, pub, Cargo and more. Generic disk tools show you _where_ the bytes
+are. DevTidy tells you _what they are_ and whether you can let them go.
+
+<CardGrid>
+  <Card title="Explains every item" icon="information">
+    What it is, what happens after removal, how long it takes to get back, and
+    exactly how it will be removed.
+  </Card>
+  <Card title="Never leaves its lane" icon="approve-check">
+    Only a rule's own paths are touched. Symlinks are never followed and mounts
+    are never crossed.
+  </Card>
+  <Card title="Honest sizes" icon="seti:db">
+    Allocated blocks, hard links counted once, and what removal would really
+    free.
+  </Card>
+  <Card title="Never phones home" icon="seti:lock">
+    No telemetry, no analytics, no remotely fetched rules.
+  </Card>
+</CardGrid>
+
+## Where to next
+
+<CardGrid>
+  <LinkCard title="Install" description="Download the app or the CLI." href="install/" />
+  <LinkCard title="CLI reference" description="scan, explain, clean, history." href="cli/" />
+  <LinkCard title="Safety model" description="How DevTidy decides what may be removed." href="safety/" />
+  <LinkCard title="Built-in rules" description="Every location DevTidy knows." href="rules/" />
+</CardGrid>

@@ -8,6 +8,7 @@ crates/rules   built-in TOML rules, user rule loading, validation
 crates/store   scan snapshots and cleanup history in SQLite
 crates/cli     `devtidy` binary: clap, tables, JSON contract
 app/           Tauri 2 desktop app: src-tauri (Rust) + React/TypeScript
+website/       landing page and docs (Astro + Starlight), deployed to GitHub Pages
 ```
 
 Frontends never touch the filesystem directly. Everything that reads or

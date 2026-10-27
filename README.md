@@ -7,6 +7,12 @@
 <p align="center"><strong>See what your developer tooling is doing to your disk, and reclaim it safely.</strong></p>
 
 <p align="center">
+  <a href="https://gligor99.github.io/devtidy/"><strong>Website</strong></a> ·
+  <a href="https://gligor99.github.io/devtidy/docs/"><strong>Docs</strong></a> ·
+  <a href="https://github.com/gligor99/devtidy/releases/latest"><strong>Download</strong></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/gligor99/devtidy/actions/workflows/ci.yml"><img src="https://github.com/gligor99/devtidy/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue" alt="License: MIT OR Apache-2.0">
   <img src="https://img.shields.io/badge/platform-macOS-lightgrey" alt="Platform: macOS">

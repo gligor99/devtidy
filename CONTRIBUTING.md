@@ -29,6 +29,18 @@ cargo fmt --all
 Use [Conventional Commits](https://www.conventionalcommits.org/)
 (`feat:`, `fix:`, `docs:`, ...); release notes are generated from them.
 
+## Website
+
+The landing page and docs live in `website/` (Astro + Starlight, Node 22.23+).
+The rules reference, changelog and download links are generated from the
+repository, so they update by themselves.
+
+```sh
+cd website
+pnpm install
+pnpm dev
+```
+
 ## Releasing
 
 1. Bump the version in `Cargo.toml`, `app/package.json` and
