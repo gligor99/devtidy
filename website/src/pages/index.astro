@@ -360,7 +360,7 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
         <a href={docs('changelog/')}>Changelog</a>
         <a href={`${REPO}/releases`}>Releases</a>
         <a href={REPO}>GitHub</a>
-        <a href={SUPPORT}>Support</a>
+        <a class="foot-kofi" href={SUPPORT}><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.3 3.2 5 6.6 5c2 0 3.4 1.1 4.4 2.4C12 6.1 13.4 5 15.4 5c3.4 0 5.5 3.3 4.1 6.7C17.5 16.4 12 21 12 21Z"></path></svg> Support on Ko-fi</a>
       </span>
     </footer>
     <script>
@@ -1134,6 +1134,23 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
   }
   .foot a:hover {
     color: var(--text);
+  }
+  .foot span:last-child {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .foot-kofi {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgb(var(--tint) / 0.03);
+  }
+  .foot-kofi svg {
+    color: #f2685b;
   }
 
   @media (max-width: 1100px) {

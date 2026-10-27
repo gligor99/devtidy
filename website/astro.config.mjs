@@ -17,6 +17,7 @@ export default defineConfig({
       logo: { src: './src/assets/icon.svg', alt: 'DevTidy' },
       favicon: '/favicon.svg',
       customCss: ['./src/styles/theme.css'],
+      components: { Footer: './src/components/DocsFooter.astro' },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/gligor99/devtidy' },
         { icon: 'heart', label: 'Support DevTidy on Ko-fi', href: 'https://ko-fi.com/V7Q129KSZC' },

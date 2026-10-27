@@ -1,0 +1,66 @@
+---
+// Starlight's footer plus a support card, shown on every docs page.
+import Default from '@astrojs/starlight/components/Footer.astro'
+import { SUPPORT } from '../lib/project'
+---
+
+<Default><slot /></Default>
+
+<aside class="support-card" aria-label="Support DevTidy">
+  <p>
+    <strong>Enjoying DevTidy?</strong> It is free and open source. A coffee helps keep it that way.
+  </p>
+  <a class="kofi" href={SUPPORT}>
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"
+      ><path
+        fill="currentColor"
+        d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.3 3.2 5 6.6 5c2 0 3.4 1.1 4.4 2.4C12 6.1 13.4 5 15.4 5c3.4 0 5.5 3.3 4.1 6.7C17.5 16.4 12 21 12 21Z"
+      ></path></svg
+    >
+    Support on Ko-fi
+  </a>
+</aside>
+
+<style>
+  .support-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, var(--sl-color-accent-low), transparent 70%);
+  }
+  .support-card p {
+    flex: 1 1 18rem;
+    margin: 0;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+  .support-card strong {
+    color: var(--sl-color-white);
+  }
+  .kofi {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--sl-color-white);
+    background: var(--sl-color-gray-6);
+    border: 1px solid var(--sl-color-gray-5);
+    white-space: nowrap;
+  }
+  .kofi:hover {
+    border-color: var(--sl-color-accent);
+  }
+  .kofi svg {
+    color: var(--dt-dangerous);
+  }
+</style>
