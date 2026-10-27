@@ -15,7 +15,9 @@ no crash reporting and no account.
   need Full Disk Access, and the app can only reveal paths in Finder and open
   links in your browser.
 
-This website is a static site on GitHub Pages and uses no analytics.
+This website is a static site on GitHub Pages and uses no analytics or
+third-party scripts. The Ko-fi link is a plain link; nothing is loaded from
+Ko-fi until you click it.
 
 DevTidy is open source, so all of this can be verified in the
 [source code](https://github.com/gligor99/devtidy).

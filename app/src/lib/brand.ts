@@ -4,4 +4,5 @@ export const BRAND = {
   repo: 'https://github.com/gligor99/devtidy',
   issues: 'https://github.com/gligor99/devtidy/issues',
   license: 'MIT OR Apache-2.0',
+  support: 'https://ko-fi.com/V7Q129KSZC',
 } as const

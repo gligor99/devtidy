@@ -9,7 +9,8 @@
 <p align="center">
   <a href="https://gligor99.github.io/devtidy/"><strong>Website</strong></a> ·
   <a href="https://gligor99.github.io/devtidy/docs/"><strong>Docs</strong></a> ·
-  <a href="https://github.com/gligor99/devtidy/releases/latest"><strong>Download</strong></a>
+  <a href="https://github.com/gligor99/devtidy/releases/latest"><strong>Download</strong></a> ·
+  <a href="https://ko-fi.com/V7Q129KSZC"><strong>Support</strong></a>
 </p>
 
 <p align="center">
@@ -182,6 +183,12 @@ User rules can add new ids but never redefine built-in ones. See
   TypeScript bindings are out of date.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the design.
+
+## Support
+
+DevTidy is free and always will be. If it saved you a few gigabytes and you
+want to say thanks, you can [buy me a coffee on Ko-fi](https://ko-fi.com/V7Q129KSZC).
+Starring the repo and reporting issues help just as much.
 
 ## License
 

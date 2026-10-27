@@ -17,7 +17,10 @@ export default defineConfig({
       logo: { src: './src/assets/icon.svg', alt: 'DevTidy' },
       favicon: '/favicon.svg',
       customCss: ['./src/styles/theme.css'],
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/gligor99/devtidy' }],
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/gligor99/devtidy' },
+        { icon: 'heart', label: 'Support DevTidy on Ko-fi', href: 'https://ko-fi.com/V7Q129KSZC' },
+      ],
       editLink: { baseUrl: 'https://github.com/gligor99/devtidy/edit/main/website/' },
       lastUpdated: true,
       head: [

@@ -1,6 +1,6 @@
 ---
 import icon from '../assets/icon.svg?url'
-import { DOWNLOADS, REPO, RULES, VERSION, describeCleanup } from '../lib/project'
+import { DOWNLOADS, REPO, RULES, SUPPORT, VERSION, describeCleanup } from '../lib/project'
 
 const base = import.meta.env.BASE_URL
 const docs = (path = '') => `${base}docs/${path}`
@@ -345,6 +345,7 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
         <div class="ctas">
           <a class="btn btn-primary" href={DOWNLOADS.dmg}>Download for macOS</a>
           <a class="btn btn-ghost" href={REPO}>Star on GitHub</a>
+          <a class="btn btn-ghost support" href={SUPPORT}><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.3 3.2 5 6.6 5c2 0 3.4 1.1 4.4 2.4C12 6.1 13.4 5 15.4 5c3.4 0 5.5 3.3 4.1 6.7C17.5 16.4 12 21 12 21Z"></path></svg> Support on Ko-fi</a>
         </div>
         <p class="fine">
           Not notarized yet: on first launch, right-click DevTidy and choose Open. <a href={docs('install/')}>Details</a>
@@ -359,6 +360,7 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
         <a href={docs('changelog/')}>Changelog</a>
         <a href={`${REPO}/releases`}>Releases</a>
         <a href={REPO}>GitHub</a>
+        <a href={SUPPORT}>Support</a>
       </span>
     </footer>
     <script>
@@ -556,6 +558,9 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
   }
   .btn-ghost:hover {
     background: rgb(var(--tint) / 0.07);
+  }
+  .support svg {
+    color: #f2685b;
   }
   .btn-small {
     padding: 7px 14px;

@@ -9,6 +9,7 @@ const repoRoot = resolve(process.cwd(), '..') + '/'
 const read = (path: string) => readFileSync(repoRoot + path, 'utf8')
 
 export const REPO = 'https://github.com/gligor99/devtidy'
+export const SUPPORT = 'https://ko-fi.com/V7Q129KSZC'
 
 export const VERSION: string = JSON.parse(read('app/package.json')).version
 

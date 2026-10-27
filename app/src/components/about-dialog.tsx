@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getVersion } from '@tauri-apps/api/app'
 import { openUrl } from '@tauri-apps/plugin-opener'
-import { EyeOffIcon, GaugeIcon, ShieldCheckIcon, WrenchIcon } from 'lucide-react'
+import { EyeOffIcon, GaugeIcon, HeartIcon, ShieldCheckIcon, WrenchIcon } from 'lucide-react'
 import { LogoMark } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
@@ -45,6 +45,10 @@ export function AboutDialog({ open, onOpenChange }: { open: boolean; onOpenChang
             Report an issue
           </Button>
         </div>
+        <Button variant="ghost" size="sm" className="self-center" onClick={() => void openUrl(BRAND.support)}>
+          <HeartIcon className="text-dangerous" />
+          Support DevTidy on Ko-fi
+        </Button>
         <p className="text-muted-foreground text-center text-[11px]">
           Open source · {BRAND.license}
         </p>
