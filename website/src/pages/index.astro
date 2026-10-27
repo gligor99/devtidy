@@ -1,6 +1,6 @@
 ---
 import icon from '../assets/icon.svg?url'
-import { DOWNLOADS, REPO, RULES, VERSION } from '../lib/project'
+import { DOWNLOADS, REPO, RULES, VERSION, describeCleanup } from '../lib/project'
 
 const base = import.meta.env.BASE_URL
 const docs = (path = '') => `${base}docs/${path}`
@@ -61,6 +61,8 @@ const tools = [
   'pip',
   'Homebrew',
 ]
+
+const focused = RULES.find((r) => r.id === 'xcode.derived-data')!
 
 const mockItems = [
   { name: 'Android emulator system images', eco: 'Android', size: '31.5 GB', safety: 'caution', delta: '' },
@@ -155,7 +157,7 @@ const mockItems = [
         </div>
         <p class="fine">Free and open source · macOS 12+ · Apple Silicon and Intel · {RULES.length} built-in rules</p>
 
-        <div class="window" role="img" aria-label="The DevTidy app showing developer caches by size and safety">
+        <div class="window" role="img" aria-label="The DevTidy app showing developer caches by size and safety, with Xcode DerivedData selected and explained">
           <div class="win-side">
             <div class="lights"><i></i><i></i><i></i></div>
             <div class="win-brand"><img src={icon} alt="" width="22" height="22" /> DevTidy <small>v{VERSION}</small></div>
@@ -178,7 +180,12 @@ const mockItems = [
             <ul>
               {
                 mockItems.map((item) => (
-                  <li class={item.name === 'Xcode DerivedData' || item.name === 'Gradle caches' ? 'checked' : ''}>
+                  <li
+                    class:list={[
+                      { checked: item.name === 'Xcode DerivedData' || item.name === 'Gradle caches' },
+                      { focused: item.name === focused.name },
+                    ]}
+                  >
                     <span class="box" />
                     <span class="name">
                       {item.name}
@@ -195,6 +202,36 @@ const mockItems = [
             </ul>
             <div class="win-foot"><span>Select all safe</span><span class="win-cta">Clean 2 · 21.3 GB</span></div>
           </div>
+          <aside class="win-detail">
+            <span class="chip safe">{focused.safety}</span>
+            <h4>{focused.name}</h4>
+            <p class="desc">{focused.description}</p>
+            <dl>
+              <dt>Size</dt>
+              <dd>18.2 GB<small>15.1 GB 6 days ago</small></dd>
+              <dt>After removal</dt>
+              <dd>{focused.regen_note}</dd>
+              <dt>Cost to regenerate</dt>
+              <dd class="cap">{focused.regen_cost}</dd>
+              <dt>How it is removed</dt>
+              <dd>{describeCleanup(focused)}</dd>
+              <dt>Quit first</dt>
+              <dd>{focused.processes?.join(', ')}</dd>
+              <dt>Location</dt>
+              <dd class="path">
+                <code>/Users/you/Library/Developer/Xcode/DerivedData</code>
+                <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"
+                  ><path
+                    d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v2M3 7v10a2 2 0 0 0 2 2h6m6-4a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2.5 5.5L21 22"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></path></svg
+                >
+              </dd>
+            </dl>
+          </aside>
         </div>
       </section>
 
@@ -537,7 +574,7 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
   /* App window mockup */
   .window {
     display: flex;
-    max-width: 980px;
+    max-width: 1160px;
     margin: 56px auto 0;
     text-align: left;
     border: 1px solid var(--line);
@@ -614,6 +651,65 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
   .win-main {
     flex: 1;
     min-width: 0;
+  }
+  .window li.focused {
+    background: rgb(255 255 255 / 0.07);
+    box-shadow: inset 2px 0 0 var(--teal);
+  }
+  .win-detail {
+    width: 280px;
+    flex-shrink: 0;
+    padding: 20px;
+    border-left: 1px solid var(--line);
+    background: #0d1715;
+  }
+  .win-detail h4 {
+    margin: 10px 0 6px;
+    font-size: 15px;
+  }
+  .win-detail .desc {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .win-detail dl {
+    margin: 0;
+  }
+  .win-detail dt {
+    color: var(--faint);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 11px;
+  }
+  .win-detail dd {
+    margin: 3px 0 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .win-detail dd small {
+    display: block;
+    color: var(--faint);
+    font-size: 11px;
+  }
+  .win-detail .cap {
+    text-transform: capitalize;
+  }
+  .win-detail .path {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    color: var(--faint);
+  }
+  .win-detail .path code {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-all;
   }
   .win-head {
     display: flex;
@@ -950,6 +1046,11 @@ Freed <span class="s">30.1 GB</span> (measured on disk).</code></pre>
     color: var(--text);
   }
 
+  @media (max-width: 1100px) {
+    .win-detail {
+      display: none;
+    }
+  }
   @media (max-width: 860px) {
     .split,
     .tiers {
