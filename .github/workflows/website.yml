@@ -41,7 +41,8 @@ jobs:
           package_json_file: website/package.json
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Astro needs a newer 22.x than runners may have cached.
+          node-version-file: website/.nvmrc
           cache: pnpm
           cache-dependency-path: website/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
