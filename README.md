@@ -19,6 +19,10 @@
   <img src="https://img.shields.io/badge/platform-macOS-lightgrey" alt="Platform: macOS">
 </p>
 
+<p align="center">
+  <img src="assets/screenshots/overview.jpg" alt="DevTidy showing developer caches by size, with Xcode DerivedData selected and explained" width="900">
+</p>
+
 Xcode DerivedData, simulators, Android system images, Gradle, npm, Yarn, pnpm,
 CocoaPods, pub, Cargo… A few years of mobile and web development quietly eats
 100+ GB. Generic disk tools show you *where* the bytes are. devtidy tells you
