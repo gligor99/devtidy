@@ -1,0 +1,28 @@
+[package]
+name = "devtidy-store"
+description = "Scan and cleanup history for devtidy, stored in SQLite."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+devtidy-core = { version = "0.1.0", path = "../core" }
+dirs = "7.0.0"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+specta = { version = "=2.0.0-rc.26", features = ["derive"], optional = true }
+specta-typescript = { version = "=0.0.13", optional = true }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+tempfile = "3.27.0"
+
+[features]
+specta = ["dep:specta", "dep:specta-typescript", "devtidy-core/specta"]
+specta-typescript = ["dep:specta-typescript"]

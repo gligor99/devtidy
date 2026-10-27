@@ -3,7 +3,7 @@
 //! Frontends (CLI, GUI) are thin layers over this crate.
 
 pub mod clean;
-pub mod history;
+pub mod disk;
 pub mod model;
 pub mod paths;
 pub mod scan;

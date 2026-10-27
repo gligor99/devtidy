@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 /// A single thing devtidy knows how to find and reclaim.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(deny_unknown_fields)]
 pub struct Rule {
     /// Stable dotted identifier, e.g. `gradle.caches`.
@@ -42,6 +43,7 @@ impl Rule {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(rename_all = "kebab-case")]
 pub enum Ecosystem {
     Ios,
@@ -71,6 +73,7 @@ impl Ecosystem {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(rename_all = "kebab-case")]
 pub enum Platform {
     Macos,
@@ -95,6 +98,7 @@ impl Platform {
 /// `safe` is deleted permanently, `caution` goes to the Trash and
 /// `dangerous` can only be removed one item at a time.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(rename_all = "kebab-case")]
 pub enum Safety {
     Safe,
@@ -104,6 +108,7 @@ pub enum Safety {
 
 /// How expensive it is to get the data back after removal.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(rename_all = "kebab-case")]
 pub enum RegenCost {
     Low,
@@ -112,6 +117,7 @@ pub enum RegenCost {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(tag = "kind", rename_all = "kebab-case", deny_unknown_fields)]
 pub enum Cleanup {
     /// Remove the matched paths. With `contents_only` the directory itself

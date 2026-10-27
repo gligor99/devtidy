@@ -2,13 +2,12 @@
 
 use std::fmt::Write as _;
 use std::io::{BufRead, IsTerminal, Write as _};
-use std::path::Path;
 use std::process::ExitCode;
 
 use anyhow::{Result, bail};
 use comfy_table::{Cell, CellAlignment};
 use devtidy_core::clean::{self, Method, Outcome, Plan};
-use devtidy_core::{RealSystem, Rule, Safety, ScanContext, Selection, history, scan};
+use devtidy_core::{RealSystem, Rule, Safety, ScanContext, Selection, scan};
 use serde::Serialize;
 
 use crate::format::{bytes, safety_cell, table};
@@ -32,12 +31,7 @@ struct JsonOutput<'a> {
     report: Option<&'a clean::Report>,
 }
 
-pub fn run(
-    rules: &[Rule],
-    ctx: &ScanContext,
-    opts: &Options,
-    history_log: &Path,
-) -> Result<ExitCode> {
+pub fn run(rules: &[Rule], ctx: &ScanContext, opts: &Options) -> Result<ExitCode> {
     let selection = match (opts.safe, opts.ids.is_empty()) {
         (true, true) => Selection::AllSafe,
         (false, false) => Selection::Ids(opts.ids.clone()),
@@ -89,11 +83,8 @@ pub fn run(
     }
 
     let report = clean::execute(&plan, &ctx.home, &sys);
-    if let Err(err) = history::append(history_log, &report) {
-        eprintln!(
-            "warning: could not write history to {}: {err}",
-            history_log.display()
-        );
+    if let Err(err) = crate::record_cleanup(&report) {
+        eprintln!("warning: could not record history: {err:#}");
     }
     if opts.json {
         let out = Versioned::new(JsonOutput {

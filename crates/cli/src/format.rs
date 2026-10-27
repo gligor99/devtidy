@@ -176,6 +176,34 @@ pub fn cleanup_summary(rule: &Rule) -> String {
     }
 }
 
+pub fn history(records: &[devtidy_store::CleanupRecord]) -> String {
+    if records.is_empty() {
+        return "No cleanups yet.\n".to_owned();
+    }
+    let mut t = table(&["When", "Freed", "Trashed", "Items"]);
+    for r in records {
+        let done = r.actions.iter().filter(|a| a.outcome == "done").count();
+        t.add_row(vec![
+            Cell::new(ago(r.at)),
+            Cell::new(r.freed.map_or_else(|| "?".to_owned(), bytes))
+                .set_alignment(CellAlignment::Right),
+            Cell::new(bytes(r.trashed)).set_alignment(CellAlignment::Right),
+            Cell::new(format!("{done}/{} done", r.actions.len())),
+        ]);
+    }
+    format!("{t}\n")
+}
+
+fn ago(at: i64) -> String {
+    let secs = crate::now().saturating_sub(at);
+    match secs {
+        ..60 => "just now".to_owned(),
+        60..3600 => format!("{} min ago", secs / 60),
+        3600..86_400 => format!("{} h ago", secs / 3600),
+        _ => format!("{} days ago", secs / 86_400),
+    }
+}
+
 pub fn rules_table(rules: &[Rule]) -> String {
     let mut table = table(&["Id", "Name", "Ecosystem", "Safety"]);
     for rule in rules {

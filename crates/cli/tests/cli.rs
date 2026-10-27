@@ -3,9 +3,12 @@ use std::fs;
 use assert_cmd::Command;
 use predicates::prelude::*;
 
+/// Every test gets its own home and data dir; nothing touches the real ones.
 fn devtidy(home: &std::path::Path) -> Command {
     let mut cmd = Command::cargo_bin("devtidy").unwrap();
-    cmd.env("DEVTIDY_HOME", home).env("NO_COLOR", "1");
+    cmd.env("DEVTIDY_HOME", home)
+        .env("DEVTIDY_DATA_DIR", home.join(".devtidy-test-data"))
+        .env("NO_COLOR", "1");
     cmd
 }
 
@@ -114,7 +117,7 @@ fn clean_dry_run_changes_nothing() {
             .join(".gradle/caches/modules-2/dep.jar")
             .exists()
     );
-    assert!(!data.path().join("history.jsonl").exists());
+    assert!(!data.path().join("devtidy.db").exists());
 }
 
 #[test]
@@ -146,10 +149,18 @@ fn clean_with_yes_deletes_and_records_history() {
         .stdout(predicate::str::contains("done     Gradle caches"));
     assert!(!home.path().join(".gradle/caches").exists());
 
-    let history = fs::read_to_string(data.path().join("history.jsonl")).unwrap();
-    let first: serde_json::Value = serde_json::from_str(history.lines().next().unwrap()).unwrap();
-    assert_eq!(first["rule_id"], "gradle.caches");
-    assert_eq!(first["outcome"]["result"], "done");
+    let out = devtidy(home.path())
+        .env("DEVTIDY_DATA_DIR", data.path())
+        .args(["history", "--json"])
+        .assert()
+        .success()
+        .get_output()
+        .stdout
+        .clone();
+    let json: serde_json::Value = serde_json::from_slice(&out).unwrap();
+    let action = &json["cleanups"][0]["actions"][0];
+    assert_eq!(action["rule_id"], "gradle.caches");
+    assert_eq!(action["outcome"], "done");
 }
 
 #[test]
@@ -184,4 +195,22 @@ fn clean_json_dry_run_contains_the_plan() {
     assert_eq!(json["schema_version"], 1);
     assert_eq!(json["plan"]["actions"][0]["rule_id"], "gradle.caches");
     assert_eq!(json["plan"]["actions"][0]["method"]["kind"], "delete");
+}
+
+#[test]
+fn scans_are_recorded_unless_disabled() {
+    let home = fake_home();
+    let data = data_dir();
+    devtidy(home.path())
+        .env("DEVTIDY_DATA_DIR", data.path())
+        .args(["scan", "--no-record"])
+        .assert()
+        .success();
+    assert!(!data.path().join("devtidy.db").exists());
+    devtidy(home.path())
+        .env("DEVTIDY_DATA_DIR", data.path())
+        .arg("scan")
+        .assert()
+        .success();
+    assert!(data.path().join("devtidy.db").exists());
 }

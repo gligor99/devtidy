@@ -17,6 +17,7 @@ pub struct ScanContext {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(rename_all = "kebab-case")]
 pub enum Status {
     /// Nothing matched on this machine.
@@ -30,6 +31,7 @@ pub enum Status {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct Finding {
     pub rule_id: String,
     pub status: Status,

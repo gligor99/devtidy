@@ -29,6 +29,11 @@ pub struct RuleList<'a> {
 }
 
 #[derive(Debug, Serialize)]
+pub struct History<'a> {
+    pub cleanups: &'a [devtidy_store::CleanupRecord],
+}
+
+#[derive(Debug, Serialize)]
 pub struct ScanReport {
     pub schema_version: u32,
     pub home: PathBuf,

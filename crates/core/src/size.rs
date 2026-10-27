@@ -15,15 +15,20 @@ use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct Measurement {
     /// Bytes allocated on disk, each inode counted once.
+    #[cfg_attr(feature = "specta", specta(type = specta_typescript::Number))]
     pub allocated: u64,
     /// Bytes that removal is expected to free. Lower than `allocated` when
     /// files are hard-linked from somewhere outside the measured paths.
+    #[cfg_attr(feature = "specta", specta(type = specta_typescript::Number))]
     pub reclaimable: u64,
     /// Number of entries visited (files, directories, symlinks).
+    #[cfg_attr(feature = "specta", specta(type = specta_typescript::Number))]
     pub entries: u64,
     /// Number of entries we were not allowed to read.
+    #[cfg_attr(feature = "specta", specta(type = specta_typescript::Number))]
     pub denied: u64,
 }
 

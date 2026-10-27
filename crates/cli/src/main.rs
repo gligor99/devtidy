@@ -44,6 +44,9 @@ enum Command {
         /// Include rules that matched nothing.
         #[arg(long)]
         all: bool,
+        /// Do not save this scan to the history database.
+        #[arg(long)]
+        no_record: bool,
         /// Exit with code 3 if the reclaimable total exceeds this size (e.g. 20G).
         #[arg(long, value_name = "SIZE", value_parser = format::parse_size)]
         fail_above: Option<u64>,
@@ -67,6 +70,12 @@ enum Command {
         /// Do not ask for confirmation.
         #[arg(long, short)]
         yes: bool,
+    },
+    /// Show past cleanups and how much they freed.
+    History {
+        /// Number of cleanups to show.
+        #[arg(long, default_value_t = 20)]
+        limit: u32,
     },
     /// List every known rule.
     Rules,
@@ -127,6 +136,7 @@ fn run(cli: Cli) -> Result<ExitCode> {
         Command::Scan {
             ecosystem,
             all,
+            no_record,
             fail_above,
         } => {
             let ecosystems: Vec<Ecosystem> = ecosystem.into_iter().map(Into::into).collect();
@@ -138,6 +148,9 @@ fn run(cli: Cli) -> Result<ExitCode> {
                 eprintln!("Scanning {} locations…", selected.len());
             }
             let findings = scan(&selected, &ctx);
+            if !no_record && let Err(err) = record_scan(&ctx, &findings) {
+                eprintln!("warning: could not record scan: {err:#}");
+            }
             let report = report::ScanReport::new(&ctx, &selected, &findings);
             if cli.json {
                 println!("{}", serde_json::to_string_pretty(&report)?);
@@ -176,7 +189,20 @@ fn run(cli: Cli) -> Result<ExitCode> {
                 yes,
                 json: cli.json,
             };
-            return clean_cmd::run(&rules, &ctx, &opts, &history_log()?);
+            return clean_cmd::run(&rules, &ctx, &opts);
+        }
+        Command::History { limit } => {
+            let records = devtidy_store::Store::open_default()?.cleanups(limit)?;
+            if cli.json {
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&report::Versioned::new(report::History {
+                        cleanups: &records
+                    }))?
+                );
+            } else {
+                print!("{}", format::history(&records));
+            }
         }
         Command::Rules => {
             if cli.json {
@@ -194,13 +220,19 @@ fn run(cli: Cli) -> Result<ExitCode> {
     Ok(ExitCode::SUCCESS)
 }
 
-/// `history.jsonl` in the platform data directory, overridable for tests.
-fn history_log() -> Result<PathBuf> {
-    let dir = match std::env::var_os("DEVTIDY_DATA_DIR") {
-        Some(dir) => PathBuf::from(dir),
-        None => dirs::data_dir()
-            .context("could not determine the data directory")?
-            .join("devtidy"),
-    };
-    Ok(dir.join("history.jsonl"))
+fn now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
+}
+
+fn record_scan(ctx: &ScanContext, findings: &[devtidy_core::Finding]) -> Result<()> {
+    let mut store = devtidy_store::Store::open_default()?;
+    store.record_scan(now(), devtidy_core::disk::space(&ctx.home), findings)?;
+    Ok(())
+}
+
+fn record_cleanup(report: &devtidy_core::Report) -> Result<()> {
+    devtidy_store::Store::open_default()?.record_cleanup(now(), report)?;
+    Ok(())
 }

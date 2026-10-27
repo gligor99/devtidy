@@ -37,6 +37,7 @@ pub enum Selection {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(tag = "kind", rename_all = "kebab-case")]
 pub enum Method {
     /// Delete permanently; space is freed immediately.
@@ -48,6 +49,7 @@ pub enum Method {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct Action {
     pub rule_id: String,
     pub name: String,
@@ -57,18 +59,21 @@ pub struct Action {
     pub roots: Vec<PathBuf>,
     /// What will be removed. Empty for command cleanups.
     pub targets: Vec<PathBuf>,
+    #[cfg_attr(feature = "specta", specta(type = specta_typescript::Number))]
     pub estimated: u64,
     /// Processes from the rule that are currently running.
     pub blocked_by: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct Skipped {
     pub rule_id: String,
     pub reason: String,
 }
 
 #[derive(Debug, Clone, Default, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct Plan {
     pub actions: Vec<Action>,
     pub skipped: Vec<Skipped>,
@@ -256,6 +261,7 @@ pub fn guard(target: &Path, roots: &[PathBuf]) -> Result<(), GuardError> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 #[serde(tag = "result", rename_all = "kebab-case")]
 pub enum Outcome {
     Done,
@@ -264,20 +270,25 @@ pub enum Outcome {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct ActionResult {
     pub rule_id: String,
     pub method: Method,
+    #[cfg_attr(feature = "specta", specta(type = specta_typescript::Number))]
     pub estimated: u64,
     pub outcome: Outcome,
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct Report {
     pub results: Vec<ActionResult>,
     /// Free space gained on the volume, measured with `statfs`. `None` if
     /// it could not be measured.
+    #[cfg_attr(feature = "specta", specta(type = Option<specta_typescript::Number>))]
     pub freed: Option<u64>,
     /// Estimated bytes moved to the Trash (freed only once it is emptied).
+    #[cfg_attr(feature = "specta", specta(type = specta_typescript::Number))]
     pub trashed: u64,
 }
 
